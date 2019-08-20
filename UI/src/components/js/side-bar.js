@@ -1,5 +1,5 @@
-import { mapGetters } from "vuex";
-
+import { mapGetters,mapActions } from "vuex";
+import AutoComplete from "@/components/AutoComplete";
 export default {
     name:'SideBar',
     data () {
@@ -13,7 +13,13 @@ export default {
             'isLoggedIn'
         ])
     },
+    components:{
+        AutoComplete
+      },
     methods:{
+        ...mapActions([
+            'AUTO_COMP'
+          ]),
         pushToSearch() {
             this.$router.push({
                 name:'search',
@@ -21,6 +27,9 @@ export default {
                     searchTerm: this.searchTerm
                 }
             })
+        },
+        autoComp() {
+            this.AUTO_COMP(this.searchTerm)
         }
     }
 }

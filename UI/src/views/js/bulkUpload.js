@@ -22,7 +22,7 @@ export default {
         uploadFile(){
             window.console.log(this.form)
             window.console.log("Link:: "+this.link)
-            this.$http.post("http://172.16.20.43:8082/metadata/"+this.link,this.form)
+            this.$http.post("http://localhost:8082/metadata/"+this.link,this.form)
             .then(response => response.json())
             .then(response => {
                 window.console.log(response)

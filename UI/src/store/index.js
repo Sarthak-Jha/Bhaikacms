@@ -40,7 +40,8 @@ export default new Vuex.Store({
     //   name="",
     //   id=""
     // }
-    searchResult:{}
+    searchResult:{},
+    autoCompResult:{}
   },
   
   mutations: {
@@ -108,6 +109,9 @@ export default new Vuex.Store({
     },
     setSearchResult(state,payload){
       state.searchResult = payload
+    },
+    setAutoCompResult(state,payload){
+      state.autoCompResult = payload
     }
   },
 
@@ -120,7 +124,7 @@ export default new Vuex.Store({
           'Content-Type':'application/json',
           'Accept': 'application/json',
         };
-        Vue.http.post("http://10.177.7.38:8084/useradmin/authenticate",JSON.stringify(payload),
+        Vue.http.post("http://localhost:8084/useradmin/authenticate",JSON.stringify(payload),
         {headers : header}).then( (resp) => {
           console.log(resp)
           resolve(resp.body)
@@ -131,14 +135,14 @@ export default new Vuex.Store({
       })
     },
     getUserList : ({commit},payload) => {
-      Vue.http.get("http://10.177.7.38:8084/useradmin/getAllUsers?pageNumber="+payload.pageNumber+"&pageSize="+payload.pageSize+"&sortBy="+payload.sortBy+"&order="+payload.order).then( (resp) => {
+      Vue.http.get("http://localhost:8084/useradmin/getAllUsers?pageNumber="+payload.pageNumber+"&pageSize="+payload.pageSize+"&sortBy="+payload.sortBy+"&order="+payload.order).then( (resp) => {
         commit('setUserList',resp.body)
       }).catch( (err) => {
       console.log(err)
     })
     },
     searchUser : ({commit},payload) => {
-      Vue.http.get("http://10.177.7.38:8084/useradmin/searchUser?input="+payload.searchText+"&pageNumber="+payload.pageNumber+"&pageSize="+payload.pageSize+"&sortBy="+payload.sortBy+"&order="+payload.order).then( (resp) => {
+      Vue.http.get("http://localhost:8084/useradmin/searchUser?input="+payload.searchText+"&pageNumber="+payload.pageNumber+"&pageSize="+payload.pageSize+"&sortBy="+payload.sortBy+"&order="+payload.order).then( (resp) => {
         console.log(resp.body)
         commit('setUserList',resp.body)
       }).catch( (err) => {
@@ -147,7 +151,7 @@ export default new Vuex.Store({
     },
     addUser : ({commit},payload) => {
       return new Promise ((resolve,reject) => {
-        Vue.http.post("http://10.177.7.38:8084/useradmin/addUserAdmin",JSON.stringify(payload)).then( (resp) => {
+        Vue.http.post("http://localhost:8084/useradmin/addUserAdmin",JSON.stringify(payload)).then( (resp) => {
           resolve(resp.body)
         }).catch( (err) => {
           console.log(err)
@@ -157,7 +161,7 @@ export default new Vuex.Store({
     },
     deleteUser : ({commit},payload) => {
       return new Promise ((resolve,reject) => {
-        Vue.http.delete("http://10.177.7.38:8084/useradmin/userDeleteByDetails?idDelete="+payload.idDelete+"&id="+payload.id).then( (resp) => {
+        Vue.http.delete("http://localhost:8084/useradmin/userDeleteByDetails?idDelete="+payload.idDelete+"&id="+payload.id).then( (resp) => {
           resolve(resp.body)
         }).catch( (err) => {
           console.log(err)
@@ -168,7 +172,7 @@ export default new Vuex.Store({
     logout : ({commit},payload) => {
       return new Promise( (resolve,reject) => {
         console.log(payload)
-        Vue.http.post("http://10.177.7.38:8084/useradmin/logout?token="+payload.token).then( (resp) => {
+        Vue.http.post("http://localhost:8084/useradmin/logout?token="+payload.token).then( (resp) => {
         resolve(resp.body)
         }).catch( (err) => {
           console.log(err)
@@ -177,11 +181,11 @@ export default new Vuex.Store({
       }) 
     },
     getCount: ({commit}) => {
-      Vue.http.get("http://10.177.7.38:8084/useradmin/countUser?roleId=1").then( (resp) => {
+      Vue.http.get("http://localhost:8084/useradmin/countUser?roleId=1").then( (resp) => {
         commit('setUserCount',resp.body)
-        Vue.http.get("http://10.177.7.38:8084/useradmin/countUser?roleId=0").then( (resp) => {
+        Vue.http.get("http://localhost:8084/useradmin/countUser?roleId=0").then( (resp) => {
           commit('setAdminCount',resp.body)
-          Vue.http.get("http://10.177.7.38:8084/metadata/count").then( (resp) => {
+          Vue.http.get("http://localhost:8084/metadata/count").then( (resp) => {
             console.log(resp.body)
             commit('setProgramCount',resp.body)
           }).catch( (err) => {
@@ -200,7 +204,7 @@ export default new Vuex.Store({
     /*---------------------------Metadata Service--------------------------------*/
     addProgram : ({commit},payload) => {
       return new Promise ((resolve,reject) => {
-        Vue.http.put("http://10.177.7.38:8081/metadata/addProgram",JSON.stringify(payload)).then( (resp) => {
+        Vue.http.put("http://localhost:8081/metadata/addProgram",JSON.stringify(payload)).then( (resp) => {
           commit('setProgram',resp.body)
           resolve(resp.body)
         }).catch( (err) => {
@@ -211,7 +215,7 @@ export default new Vuex.Store({
     },
     addSingleVideo : ({commit},payload) => {
       return new Promise ((resolve,reject) => {
-        Vue.http.put("http://10.177.7.38:8081/metadata/addSingleVideo",JSON.stringify(payload)).then( (resp) => {
+        Vue.http.put("http://localhost:8081/metadata/addSingleVideo",JSON.stringify(payload)).then( (resp) => {
           resolve(resp.body)
         }).catch( (err) => {
           console.log(err)
@@ -221,7 +225,7 @@ export default new Vuex.Store({
     },
     addSeason : ({commit},payload) => {
       return new Promise ((resolve,reject) => {
-        Vue.http.put("http://10.177.7.38:8081/metadata/addSeason",JSON.stringify(payload)).then( (resp) => {
+        Vue.http.put("http://localhost:8081/metadata/addSeason",JSON.stringify(payload)).then( (resp) => {
           commit('setSeason',resp.body)
           console.log(resp.body)
           resolve(resp.body)
@@ -233,7 +237,7 @@ export default new Vuex.Store({
     },
     addEpisodes : ({commit},payload) => {
       return new Promise ((resolve,reject) => {
-        Vue.http.put("http://10.177.7.38:8081/metadata/addEpisodes",JSON.stringify(payload)).then( (resp) => {
+        Vue.http.put("http://localhost:8081/metadata/addEpisodes",JSON.stringify(payload)).then( (resp) => {
           commit('setEpisode',resp.body)
           resolve(resp.body)
         }).catch( (err) => {
@@ -243,7 +247,7 @@ export default new Vuex.Store({
       })
     },
     getSingleVideoPrograms: ({commit},payload) => {
-      Vue.http.get("http://10.177.7.38:8081/metadata/getAllSingleVideoProgram?pageSize="+payload.pageSize+"&pageNumber="+payload.pageNumber).then( (resp) => {
+      Vue.http.get("http://localhost:8081/metadata/getAllSingleVideoProgram?pageSize="+payload.pageSize+"&pageNumber="+payload.pageNumber).then( (resp) => {
         console.log(resp)
         commit('setSingleVideos',resp.body)
       }).catch( (err) => {
@@ -251,21 +255,21 @@ export default new Vuex.Store({
       })
     },
     getMultiVideoPrograms: ({commit},payload) => {
-      Vue.http.get("http://10.177.7.38:8081/metadata/getAllMultiVideoProgram?pageSize="+payload.pageSize+"&pageNumber="+payload.pageNumber).then( (resp) => {
+      Vue.http.get("http://localhost:8081/metadata/getAllMultiVideoProgram?pageSize="+payload.pageSize+"&pageNumber="+payload.pageNumber).then( (resp) => {
         commit('setMultiVideos',resp.body)
       }).catch( (err) => {
         console.log(err)
       })
     },
     getSeasonalVideoPrograms: ({commit},payload) => {
-      Vue.http.get("http://10.177.7.38:8081/metadata/getAllSeasonalVideoProgram?pageSize="+payload.pageSize+"&pageNumber="+payload.pageNumber).then( (resp) => {
+      Vue.http.get("http://localhost:8081/metadata/getAllSeasonalVideoProgram?pageSize="+payload.pageSize+"&pageNumber="+payload.pageNumber).then( (resp) => {
         commit('setSeasonalVideos',resp.body)
       }).catch( (err) => {
         console.log(err)
       })
     },
     getSeasonByProgram: ({commit},payload) => {
-      Vue.http.get("http://10.177.7.38:8081/metadata/getSeasonsByProgramId?programId="+payload.programId+"&pageNumber="+payload.pageNumber+"&pageSize="+payload.pageSize).then( (resp) => {
+      Vue.http.get("http://localhost:8081/metadata/getSeasonsByProgramId?programId="+payload.programId+"&pageNumber="+payload.pageNumber+"&pageSize="+payload.pageSize).then( (resp) => {
         console.log(resp.body)
         commit('setSeasons',resp.body)
       }).catch( (err) => {
@@ -273,7 +277,7 @@ export default new Vuex.Store({
       })
     },
     getEpisodesBySeason: ({commit},payload) => {
-      Vue.http.get("http://10.177.7.38:8081/metadata/getEpisodesBySeasonId?seasonId="+payload.seasonId+"&pageNumber="+payload.pageNumber+"&pageSize="+payload.pageSize).then( (resp) => {
+      Vue.http.get("http://localhost:8081/metadata/getEpisodesBySeasonId?seasonId="+payload.seasonId+"&pageNumber="+payload.pageNumber+"&pageSize="+payload.pageSize).then( (resp) => {
         console.log(resp)
         commit('setEpisodes',resp.body)
       }).catch( (err) => {
@@ -282,7 +286,7 @@ export default new Vuex.Store({
     },
     deleteProgramById: ({commit},payload) => {
       return new Promise((resolve,reject) => {
-        Vue.http.post("http://10.177.7.38:8081/metadata/deleteProgramById",JSON.stringify(payload)).then( (resp) => {
+        Vue.http.post("http://localhost:8081/metadata/deleteProgramById",JSON.stringify(payload)).then( (resp) => {
           resolve(resp.body)
         }).catch( (err) => {
           console.log(err)
@@ -293,7 +297,7 @@ export default new Vuex.Store({
     deleteEpisodeById: ({commit},payload) => {
       return new Promise((resolve,reject) => {
         console.log(payload)
-        Vue.http.post("http://10.177.7.38:8081/metadata/deleteEpisodeById",JSON.stringify(payload)).then( (resp) => {
+        Vue.http.post("http://localhost:8081/metadata/deleteEpisodeById",JSON.stringify(payload)).then( (resp) => {
           resolve(resp.body)
         }).catch( (err) => {
           console.log(err)
@@ -304,7 +308,7 @@ export default new Vuex.Store({
     deleteSeasonById: ({commit},payload) => {
       return new Promise((resolve,reject) => {
         console.log(payload)
-        Vue.http.post("http://10.177.7.38:8081/metadata/deleteSeasonById",JSON.stringify(payload)).then( (resp) => {
+        Vue.http.post("http://localhost:8081/metadata/deleteSeasonById",JSON.stringify(payload)).then( (resp) => {
           resolve(resp.body)
         }).catch( (err) => {
           console.log(err)
@@ -315,7 +319,7 @@ export default new Vuex.Store({
     //Language
     addLanguage: ({commit},payload) => {
       return new Promise((resolve,reject) => {
-        Vue.http.post("http://10.177.7.38:8081/admin/addLanguage",JSON.stringify(payload)).then( (resp) => {
+        Vue.http.post("http://localhost:8081/admin/addLanguage",JSON.stringify(payload)).then( (resp) => {
           // console.log(resp.body)
           resolve(resp.body)
         }).catch( (err) => {
@@ -325,7 +329,7 @@ export default new Vuex.Store({
       })
     },
     getLanguages: ({commit}) => {
-      Vue.http.get("http://10.177.7.38:8081/admin/getAllLanguages").then((resp) => {
+      Vue.http.get("http://localhost:8081/admin/getAllLanguages").then((resp) => {
           commit('setLanguages',resp.body)
       }).catch((err) => {
           console.log(err)
@@ -333,7 +337,7 @@ export default new Vuex.Store({
     },
     deleteLanguageByName: ({commit},payload) => {
       return new Promise((resolve,reject) => {
-        Vue.http.delete("http://10.177.7.38:8081/admin/deleteLanguageByName?languageName="+payload.name).then((resp) => {
+        Vue.http.delete("http://localhost:8081/admin/deleteLanguageByName?languageName="+payload.name).then((resp) => {
           console.log(resp)
           resolve(resp.body)
         }).catch((err) => {
@@ -344,7 +348,7 @@ export default new Vuex.Store({
     },
     editLanguage: (payload) => {
       return new Promise((resolve,reject) => {
-        Vue.http.put("http://10.177.7.38:8081/admin/editLanguage?newName="+payload.name).then((resp) => {
+        Vue.http.put("http://localhost:8081/admin/editLanguage?newName="+payload.name).then((resp) => {
           resolve(resp.body)
         }).catch((err) => {
           console.log(err)
@@ -354,7 +358,7 @@ export default new Vuex.Store({
     },
     //CREW ROLES
     getCrewRoles: ({commit}) => {
-      Vue.http.get("http://10.177.7.38:8081/admin/getAllCrewRoles").then((resp) => {
+      Vue.http.get("http://localhost:8081/admin/getAllCrewRoles").then((resp) => {
           commit('setCrewRoles',resp.body)
       }).catch((err) => {
           console.log(err)
@@ -363,7 +367,7 @@ export default new Vuex.Store({
     
     addCrewRoles: ({commit},payload) => {
       return new Promise((resolve,reject) => {
-        Vue.http.put("http://10.177.7.38:8081/admin/addCrew",JSON.stringify(payload)).then( (resp) => {
+        Vue.http.put("http://localhost:8081/admin/addCrew",JSON.stringify(payload)).then( (resp) => {
           // console.log(resp.body)
           resolve(resp.body)
         }).catch( (err) => {
@@ -374,7 +378,7 @@ export default new Vuex.Store({
     },
     deleteCrewRoles: ({commit},payload) => {
       return new Promise((resolve,reject) => {
-        Vue.http.delete("http://10.177.7.38:8081/admin/deleteCrewRole?crewId="+payload.id).then((resp) => {
+        Vue.http.delete("http://localhost:8081/admin/deleteCrewRole?crewId="+payload.id).then((resp) => {
           resolve(resp.body)
         }).catch((err) => {
           console.log(err)
@@ -392,7 +396,7 @@ export default new Vuex.Store({
         'Content-Type': 'application/json',
         'Accept': 'application/json'
       };
-      Vue.http.post("http://10.177.7.38:8082/audit/getAudits",JSON.stringify(payload),
+      Vue.http.post("http://localhost:8082/audit/getAudits",JSON.stringify(payload),
       {headers : header}).then( (resp) => {
       commit('setAllAudits',resp.body)
     }).catch( (err) => {
@@ -401,7 +405,7 @@ export default new Vuex.Store({
     },
     getReport: ({commit},payload) => {
       return new Promise((resolve,reject) => {
-        Vue.http.post("http://10.177.7.38:8082/audit/getReport?start="+payload.startDate+"&end="+payload.endDate).then( (resp) => {
+        Vue.http.post("http://localhost:8082/audit/getReport?start="+payload.startDate+"&end="+payload.endDate).then( (resp) => {
         
         var fileName = "myDefaultFileName.pdf";
 
@@ -442,7 +446,7 @@ export default new Vuex.Store({
     imageUpload: ({commit},payload) => {
       return new Promise((resolve,reject) => {
         console.log(payload.get('file'))
-        Vue.http.post("http://10.177.7.38:8082/image/upload",payload).then( (resp) => {
+        Vue.http.post("http://localhost:8082/image/upload",payload).then( (resp) => {
           resolve(resp.body)
         }).catch( (err) => {
           console.log(err)
@@ -457,7 +461,7 @@ export default new Vuex.Store({
     //Testing Phase
     searchVideo : ({commit},payload) => { 
       return new Promise((resolve,reject) => {
-        Vue.http.get("http://10.177.7.38:8084/solrSearch/search?searchTerm="+payload.searchText+"&pageNumber=0&pageSize=5&videoType="+payload.videoType).then( (resp) => {
+        Vue.http.get("http://localhost:8084/solrSearch/search?searchTerm="+payload.searchText+"&pageNumber=0&pageSize=5&videoType="+payload.videoType).then( (resp) => {
           commit('setMultiVideos',resp.body)
           console.log(resp.body)
         }).catch( (err) => {
@@ -469,10 +473,22 @@ export default new Vuex.Store({
     searchInVideo : ({commit},payload) => {
       console.log('payload', payload.data)
       return new Promise((resolve,reject) => {
-        Vue.http.get("http://10.177.7.47:8080/solrSearch/search?searchTerm="+payload.data.searchTerm)
+        Vue.http.get("http://localhost:8080/solrSearch/search?searchTerm="+payload.data.searchTerm)
         .then( (resp) => {
           commit('setSearchResult',resp.body)
           console.log("it is a dummy    ",resp.body)
+        }).catch( (err) => {
+          console.log(err)
+        })
+      })
+    },
+    AUTO_COMP : ({commit},payload) => {
+      console.log('payload', payload)
+      return new Promise((resolve,reject) => {
+        Vue.http.get("http://localhost:8080/solrSearch/autoComplete?word="+payload)
+        .then( (resp) => {
+          commit('setAutoCompResult',resp.body)
+          console.log("it is a dummy auto   ",resp.body)
         }).catch( (err) => {
           console.log(err)
         })
@@ -482,7 +498,7 @@ export default new Vuex.Store({
 
     searchInSingleVideo : ({commit},payload) => {
       return new Promise((resolve,reject) => {
-        Vue.http.get("http://10.177.7.38:8084/solrSearch/search?searchTerm="+payload.searchText+"&pageNumber=0&pageSize=5&videoType="+payload.videoType).then( (resp) => {
+        Vue.http.get("http://localhost:8084/solrSearch/search?searchTerm="+payload.searchText+"&pageNumber=0&pageSize=5&videoType="+payload.videoType).then( (resp) => {
           commit('setSingleVideos',resp.body)
           console.log(resp.body)
         }).catch( (err) => {
@@ -494,7 +510,7 @@ export default new Vuex.Store({
 
     //Categories
     fetchCategoriesAction({commit,dispatch}){
-      Vue.http.get("http://10.177.7.38:8081/admin/getCompleteTree")
+      Vue.http.get("http://localhost:8081/admin/getCompleteTree")
       .then(response => response.json())
       .then(response => {
         commit('setCategories',response)
@@ -575,6 +591,9 @@ export default new Vuex.Store({
     },
     getSearchResult(state) {
       return state.searchResult
+    },
+    getAutoCompResult(state) {
+      return state.autoCompResult
     }
   }
 })
